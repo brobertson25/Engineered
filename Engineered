@@ -5,9 +5,12 @@
  */
 package javafxapplication9;
 
+import java.awt.event.MouseEvent;
+import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -22,6 +25,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 
 /**
@@ -29,7 +33,13 @@ import javafx.stage.Stage;
  * @author bcrobert
  */
 public class Engineered extends Application {
+    public static void main(String[] args) {
+        launch(args);
+    }
     
+    TextField[] text = new TextField [100];
+    final Group root = new Group(text);
+    Scene scene = new Scene(root, 300, 250);
     public MenuBar menuBar;
     public Menu File;
     public Menu Edit;
@@ -38,19 +48,12 @@ public class Engineered extends Application {
     TextField textbox;
     public CreateMenus mb = new CreateMenus();
     public createShapes cs = new createShapes();
-    
-    public Engineered(){
-        
-        
-    }
-    
-     public static void main(String[] args) {
-        launch(args);
-    }
-    
+    final TranslateTransition transition = createTranslateTransition(text[text.length -1]);
+    moveTextOnMousePress(scene, text[text.length -1], transition);
+       
     @Override
     public void start(Stage primaryStage) {
-        final Group root = new Group();
+        
         final FlowPane fp = new FlowPane();
         final VBox vb = new VBox();
         vb.setAlignment(Pos.CENTER);
@@ -71,25 +74,53 @@ public class Engineered extends Application {
         Textbox.setOnAction(new EventHandler<ActionEvent>(){
             public void handle (ActionEvent t){
                 textbox = cs.createTextbox();
-                fp.getChildren().add(textbox);
+                text[text.length -1] = textbox;
+                for(int i = 0; i < text.length; i++){
+                    root.getChildren().add(text[i]);
+                }
+                
             }
         });
+        
+        
+        
+        
         
     
         Shapes.getItems().addAll(Textbox);
         menuBar.getMenus().addAll(File, Edit, Shapes);
         
-        Scene scene = new Scene(new VBox(), 300, 250);
+        
        
-        ((VBox) scene.getRoot()).getChildren().addAll(menuBar, fp);
+        ((VBox) scene.getRoot()).getChildren().addAll(menuBar, root);
         
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
-    /**
-     * @param args the command line arguments
-     */
-   
+    private TranslateTransition createTranslateTransition(TextField text) {
+        final TranslateTransition transition = new TranslateTransition(Duration.seconds(0.25), text);
+        transition.setOnFinished(new EventHandler <ActionEvent>(){
+            @Override
+            public void handle (ActionEvent t){
+                text.setLayoutX(text.getLayoutX() + text.getTranslateX());
+                text.setLayoutY(text.getLayoutY() + text.getTranslateY());
+                text.setTranslateX(0);
+                text.setTranslateY(0);
+            }
+        });
+    return transition;
+}
     
+    private void moveTextOnMousePress(Scene scene, TextField text, TranslateTransition transition){
+        scene.setOnMousePressed(new EventHandler<MouseEvent>(){
+            @Override
+            public void handle(MouseEvent event){
+                if (!event.isControlDown()){
+                    text.setLayoutX(event.getSceneX());
+                    text.setLayoutY(even);
+                }
+            }
+        });
+    }
 }
