@@ -1,0 +1,18 @@
+package javafxapplication9;
+
+import javafx.scene.control.TextField;
+
+/**
+ *
+ * @author bcrobert
+ */
+public class createShapes {
+
+    
+    public TextField createTextbox(){
+        TextField tf = new TextField();
+        tf.setPrefWidth(50);
+        return tf;   
+    }
+    
+}
