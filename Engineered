@@ -1,0 +1,95 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package javafxapplication9;
+
+import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+
+
+/**
+ *
+ * @author bcrobert
+ */
+public class Engineered extends Application {
+    
+    public MenuBar menuBar;
+    public Menu File;
+    public Menu Edit;
+    public Menu Shapes;
+    public MenuItem Textbox;
+    TextField textbox;
+    public CreateMenus mb = new CreateMenus();
+    public createShapes cs = new createShapes();
+    
+    public Engineered(){
+        
+        
+    }
+    
+     public static void main(String[] args) {
+        launch(args);
+    }
+    
+    @Override
+    public void start(Stage primaryStage) {
+        final Group root = new Group();
+        final FlowPane fp = new FlowPane();
+        final VBox vb = new VBox();
+        vb.setAlignment(Pos.CENTER);
+        vb.setSpacing(10);
+        vb.setPadding(new Insets(0, 10, 0, 10));
+        vb.getChildren().addAll();
+        fp.setVgap(4);
+        fp.setHgap(8);
+        
+        fp.setPrefWrapLength(20);
+        
+        primaryStage.setTitle("ForYourEntertainment");
+        menuBar = mb.createMenu();
+        File = mb.createMenuFile("File");
+        Edit = mb.createMenuFile("Edit");
+        Shapes = mb.createMenuFile("Shapes");
+        Textbox = mb.createMenuItem("TextBox");
+        Textbox.setOnAction(new EventHandler<ActionEvent>(){
+            public void handle (ActionEvent t){
+                textbox = cs.createTextbox();
+                fp.getChildren().add(textbox);
+            }
+        });
+        
+    
+        Shapes.getItems().addAll(Textbox);
+        menuBar.getMenus().addAll(File, Edit, Shapes);
+        
+        Scene scene = new Scene(new VBox(), 300, 250);
+       
+        ((VBox) scene.getRoot()).getChildren().addAll(menuBar, fp);
+        
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+    /**
+     * @param args the command line arguments
+     */
+   
+    
+}
