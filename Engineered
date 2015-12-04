@@ -59,6 +59,10 @@ public class Engineered extends Application {
     public MenuItem DiagonalLeftLine;
     public MenuItem HorizontalLine;
     public MenuItem VerticalLine;
+    public MenuItem FilledVerticalDiamond;
+    public MenuItem FilledHorizontalDiamond;
+    public MenuItem HollowHorizontalDiamond;
+    public MenuItem HollowVerticalDiamond;
     public Line line;
       
     @Override
@@ -95,16 +99,22 @@ public class Engineered extends Application {
         DiagonalLeftLine = mb.createMenuItem("DiagonalLeft");
         HorizontalLine = mb.createMenuItem("Horizontal");
         VerticalLine = mb.createMenuItem("Vertical");
+        FilledVerticalDiamond = mb.createMenuItem("VerticalComposition");
+        FilledHorizontalDiamond = mb.createMenuItem("HorizontalComposition");
+        HollowHorizontalDiamond = mb.createMenuItem("HorizontalAggregation");
+        HollowVerticalDiamond = mb.createMenuItem("VerticalAggregation");
         
         Textbox.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle (ActionEvent t){
                 final Node textboxpanel = makeDraggable(cs.createTextbox());
-                textboxpanel.setLayoutX(200);
-                textboxpanel.setLayoutY(200);
+                textboxpanel.setLayoutX(400);
+                textboxpanel.setLayoutY(400);
                 pane.getChildren().add(textboxpanel);
                 }
         });
+        
+        
         
         
         DiagonalRightLine.setOnAction(new EventHandler<ActionEvent>(){
@@ -122,8 +132,8 @@ public class Engineered extends Application {
             @Override
             public void handle (ActionEvent t){
                 final Node line = makeDraggable(cs.createDiagonalLeftLine());
-                line.setLayoutX(200);
-                line.setLayoutY(200);
+                line.setLayoutX(250);
+                line.setLayoutY(250);
                 pane.getChildren().add(line);
                 
                 }
@@ -133,8 +143,8 @@ public class Engineered extends Application {
             @Override
             public void handle (ActionEvent t){
                 final Node line = makeDraggable(cs.createHorizontalLine());
-                line.setLayoutX(200);
-                line.setLayoutY(200);
+                line.setLayoutX(230);
+                line.setLayoutY(230);
                 pane.getChildren().add(line);
                 
                 }
@@ -144,13 +154,54 @@ public class Engineered extends Application {
             @Override
             public void handle (ActionEvent t){
                 final Node line = makeDraggable(cs.createVerticalLine());
-                line.setLayoutX(200);
-                line.setLayoutY(200);
+                line.setLayoutX(220);
+                line.setLayoutY(220);
                 pane.getChildren().add(line);
                 
                 }
         });
-        Lines.getItems().addAll(DiagonalRightLine, DiagonalLeftLine, HorizontalLine, VerticalLine);
+        
+        FilledVerticalDiamond.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle (ActionEvent t){
+                final Node aggregation = makeDraggable(cs.createVerticalFilledDiamond());
+                aggregation.setLayoutX(220);
+                aggregation.setLayoutY(220);
+                pane.getChildren().add(aggregation);
+                }
+        });
+        
+        FilledHorizontalDiamond.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle (ActionEvent t){
+                final Node aggregation = makeDraggable(cs.createHorizontalFilledDiamond());
+                aggregation.setLayoutX(220);
+                aggregation.setLayoutY(220);
+                pane.getChildren().add(aggregation);
+                }
+        });
+        
+        HollowHorizontalDiamond.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle (ActionEvent t){
+                final Node aggregation = makeDraggable(cs.createHorizontalHollowDiamond());
+                aggregation.setLayoutX(210);
+                aggregation.setLayoutY(210);
+                pane.getChildren().add(aggregation);
+                }
+        });
+        
+        HollowVerticalDiamond.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle (ActionEvent t){
+                final Node aggregation = makeDraggable(cs.createVerticalHollowDiamond());
+                aggregation.setLayoutX(270);
+                aggregation.setLayoutY(270);
+                pane.getChildren().add(aggregation);
+                }
+        });
+        
+        Lines.getItems().addAll(DiagonalRightLine, DiagonalLeftLine, HorizontalLine, VerticalLine, FilledVerticalDiamond, FilledHorizontalDiamond, HollowVerticalDiamond, HollowHorizontalDiamond);
         Shapes.getItems().addAll(Textbox);
         menuBar.getMenus().addAll(File, Edit, Shapes, Lines);
         
