@@ -5,25 +5,34 @@
  */
 package javafxapplication9;
 
-import java.awt.event.MouseEvent;
+
+
+
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -32,38 +41,48 @@ import javafx.util.Duration;
  *
  * @author bcrobert
  */
+
 public class Engineered extends Application {
+    private final BooleanProperty dragModeActiveProperty = new SimpleBooleanProperty(this, "dragModeActive", true);
     public static void main(String[] args) {
         launch(args);
     }
-    
-    TextField[] text = new TextField [100];
-    final Group root = new Group(text);
-    Scene scene = new Scene(root, 300, 250);
+    public CreateMenus mb = new CreateMenus();
+    public createShapes cs = new createShapes();
     public MenuBar menuBar;
     public Menu File;
     public Menu Edit;
     public Menu Shapes;
     public MenuItem Textbox;
-    TextField textbox;
-    public CreateMenus mb = new CreateMenus();
-    public createShapes cs = new createShapes();
-    final TranslateTransition transition = createTranslateTransition(text[text.length -1]);
-    moveTextOnMousePress(scene, text[text.length -1], transition);
+    public MenuItem Lines;
+    public Line line;
+    
+    int count = 0;
+    
+    
+    
        
     @Override
     public void start(Stage primaryStage) {
         
-        final FlowPane fp = new FlowPane();
+        final Pane pane = new Pane();
+        pane.setPrefSize(800, 800);
         final VBox vb = new VBox();
-        vb.setAlignment(Pos.CENTER);
+        final BorderPane bp = new BorderPane();
+        BorderPane.setAlignment(pane, Pos.CENTER);
+        
+        bp.setCenter(pane);
+        final CheckBox dragModeCheckBox = new CheckBox("Drag?");
+        BorderPane.setMargin(dragModeCheckBox, new Insets(10));
+        bp.setBottom(dragModeCheckBox);
+        
+        dragModeActiveProperty.bind(dragModeCheckBox.selectedProperty());
+        
+        vb.setAlignment(Pos.TOP_LEFT);
         vb.setSpacing(10);
         vb.setPadding(new Insets(0, 10, 0, 10));
         vb.getChildren().addAll();
-        fp.setVgap(4);
-        fp.setHgap(8);
         
-        fp.setPrefWrapLength(20);
         
         primaryStage.setTitle("ForYourEntertainment");
         menuBar = mb.createMenu();
@@ -71,56 +90,79 @@ public class Engineered extends Application {
         Edit = mb.createMenuFile("Edit");
         Shapes = mb.createMenuFile("Shapes");
         Textbox = mb.createMenuItem("TextBox");
+        Lines = mb.createMenuItem("Line");
+        
         Textbox.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
             public void handle (ActionEvent t){
-                textbox = cs.createTextbox();
-                text[text.length -1] = textbox;
-                for(int i = 0; i < text.length; i++){
-                    root.getChildren().add(text[i]);
+                final Node textboxpanel = makeDraggable(cs.createTextbox());
+                pane.getChildren().add(textboxpanel);
                 }
-                
-            }
         });
         
         
+        Lines.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle (ActionEvent t){
+                final Node line = makeDraggable(cs.createLine());
+                pane.getChildren().add(line);
+                count++;
+                }
+        });
         
         
-        
-    
-        Shapes.getItems().addAll(Textbox);
+        Shapes.getItems().addAll(Textbox, Lines);
         menuBar.getMenus().addAll(File, Edit, Shapes);
         
-        
-       
-        ((VBox) scene.getRoot()).getChildren().addAll(menuBar, root);
+        Scene scene = new Scene(new VBox(), 800, 800);
+     
+        ((VBox) scene.getRoot()).getChildren().addAll(menuBar, bp);
         
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-
-    private TranslateTransition createTranslateTransition(TextField text) {
-        final TranslateTransition transition = new TranslateTransition(Duration.seconds(0.25), text);
-        transition.setOnFinished(new EventHandler <ActionEvent>(){
-            @Override
-            public void handle (ActionEvent t){
-                text.setLayoutX(text.getLayoutX() + text.getTranslateX());
-                text.setLayoutY(text.getLayoutY() + text.getTranslateY());
-                text.setTranslateX(0);
-                text.setTranslateY(0);
-            }
-        });
-    return transition;
-}
     
-    private void moveTextOnMousePress(Scene scene, TextField text, TranslateTransition transition){
-        scene.setOnMousePressed(new EventHandler<MouseEvent>(){
-            @Override
-            public void handle(MouseEvent event){
-                if (!event.isControlDown()){
-                    text.setLayoutX(event.getSceneX());
-                    text.setLayoutY(even);
-                }
-            }
-        });
+
+
+    private Node makeDraggable(Node node) {
+         final DragContext e = new DragContext();
+         final Group root = new Group (node);
+         
+         root.addEventFilter(MouseEvent.ANY, new EventHandler<MouseEvent>(){
+             public void handle(final MouseEvent evt){
+                 if (dragModeActiveProperty.get()){
+                     evt.consume();
+                 }
+             }
+         });
+         
+         root.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>(){
+             public void handle (final MouseEvent evt){
+                 if (dragModeActiveProperty.get()){
+                     e.mouseAnchorX = evt.getX();
+                     e.mouseAnchorY = evt.getY();
+                     e.initialTranslateX = node.getTranslateX();
+                     e.initialTranslateY = node.getTranslateY();
+                 }
+             }
+         });
+         
+         root.addEventFilter(MouseEvent.MOUSE_DRAGGED, new EventHandler<MouseEvent>(){
+             public void handle (final MouseEvent evt){
+                 if (dragModeActiveProperty.get()){
+                     node.setTranslateX(e.initialTranslateX + evt.getX());
+                     node.setTranslateX(e.initialTranslateY + evt.getY());
+                 }
+             }
+         });
+         return root;
     }
+    
+    private static final class DragContext {
+    public double mouseAnchorX;
+    public double mouseAnchorY;
+    public double initialTranslateX;
+    public double initialTranslateY;
+  }
+    
 }
