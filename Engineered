@@ -43,7 +43,7 @@ import javafx.util.Duration;
  */
 
 public class Engineered extends Application {
-    private final BooleanProperty dragModeActiveProperty = new SimpleBooleanProperty(this, "dragModeActive", true);
+    private final BooleanProperty drag = new SimpleBooleanProperty(this, "dragModeActive", true);
     public static void main(String[] args) {
         launch(args);
     }
@@ -53,15 +53,14 @@ public class Engineered extends Application {
     public Menu File;
     public Menu Edit;
     public Menu Shapes;
+    public Menu Lines;
     public MenuItem Textbox;
-    public MenuItem Lines;
+    public MenuItem DiagonalRightLine;
+    public MenuItem DiagonalLeftLine;
+    public MenuItem HorizontalLine;
+    public MenuItem VerticalLine;
     public Line line;
-    
-    int count = 0;
-    
-    
-    
-       
+      
     @Override
     public void start(Stage primaryStage) {
         
@@ -75,8 +74,9 @@ public class Engineered extends Application {
         final CheckBox dragModeCheckBox = new CheckBox("Drag?");
         BorderPane.setMargin(dragModeCheckBox, new Insets(10));
         bp.setBottom(dragModeCheckBox);
+       
         
-        dragModeActiveProperty.bind(dragModeCheckBox.selectedProperty());
+        drag.bind(dragModeCheckBox.selectedProperty());
         
         vb.setAlignment(Pos.TOP_LEFT);
         vb.setSpacing(10);
@@ -89,30 +89,70 @@ public class Engineered extends Application {
         File = mb.createMenuFile("File");
         Edit = mb.createMenuFile("Edit");
         Shapes = mb.createMenuFile("Shapes");
+        Lines = mb.createMenuFile("Lines");
         Textbox = mb.createMenuItem("TextBox");
-        Lines = mb.createMenuItem("Line");
+        DiagonalRightLine = mb.createMenuItem("DiagonalRight");
+        DiagonalLeftLine = mb.createMenuItem("DiagonalLeft");
+        HorizontalLine = mb.createMenuItem("Horizontal");
+        VerticalLine = mb.createMenuItem("Vertical");
         
         Textbox.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle (ActionEvent t){
                 final Node textboxpanel = makeDraggable(cs.createTextbox());
+                textboxpanel.setLayoutX(200);
+                textboxpanel.setLayoutY(200);
                 pane.getChildren().add(textboxpanel);
                 }
         });
         
         
-        Lines.setOnAction(new EventHandler<ActionEvent>(){
+        DiagonalRightLine.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle (ActionEvent t){
-                final Node line = makeDraggable(cs.createLine());
+                final Node line = makeDraggable(cs.createDiagonalRightLine());
+                line.setLayoutX(200);
+                line.setLayoutY(200);
                 pane.getChildren().add(line);
-                count++;
+                
                 }
         });
         
+        DiagonalLeftLine.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle (ActionEvent t){
+                final Node line = makeDraggable(cs.createDiagonalLeftLine());
+                line.setLayoutX(200);
+                line.setLayoutY(200);
+                pane.getChildren().add(line);
+                
+                }
+        });
         
-        Shapes.getItems().addAll(Textbox, Lines);
-        menuBar.getMenus().addAll(File, Edit, Shapes);
+        HorizontalLine.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle (ActionEvent t){
+                final Node line = makeDraggable(cs.createHorizontalLine());
+                line.setLayoutX(200);
+                line.setLayoutY(200);
+                pane.getChildren().add(line);
+                
+                }
+        });
+        
+        VerticalLine.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle (ActionEvent t){
+                final Node line = makeDraggable(cs.createVerticalLine());
+                line.setLayoutX(200);
+                line.setLayoutY(200);
+                pane.getChildren().add(line);
+                
+                }
+        });
+        Lines.getItems().addAll(DiagonalRightLine, DiagonalLeftLine, HorizontalLine, VerticalLine);
+        Shapes.getItems().addAll(Textbox);
+        menuBar.getMenus().addAll(File, Edit, Shapes, Lines);
         
         Scene scene = new Scene(new VBox(), 800, 800);
      
@@ -124,39 +164,50 @@ public class Engineered extends Application {
     
 
 
-    private Node makeDraggable(Node node) {
-         final DragContext e = new DragContext();
-         final Group root = new Group (node);
-         
-         root.addEventFilter(MouseEvent.ANY, new EventHandler<MouseEvent>(){
-             public void handle(final MouseEvent evt){
-                 if (dragModeActiveProperty.get()){
-                     evt.consume();
-                 }
-             }
-         });
-         
-         root.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>(){
-             public void handle (final MouseEvent evt){
-                 if (dragModeActiveProperty.get()){
-                     e.mouseAnchorX = evt.getX();
-                     e.mouseAnchorY = evt.getY();
-                     e.initialTranslateX = node.getTranslateX();
-                     e.initialTranslateY = node.getTranslateY();
-                 }
-             }
-         });
-         
-         root.addEventFilter(MouseEvent.MOUSE_DRAGGED, new EventHandler<MouseEvent>(){
-             public void handle (final MouseEvent evt){
-                 if (dragModeActiveProperty.get()){
-                     node.setTranslateX(e.initialTranslateX + evt.getX());
-                     node.setTranslateX(e.initialTranslateY + evt.getY());
-                 }
-             }
-         });
-         return root;
-    }
+    private Node makeDraggable(final Node node) {
+    final DragContext dragContext = new DragContext();
+    final Group wrapGroup = new Group(node);
+
+    wrapGroup.addEventFilter(MouseEvent.ANY, new EventHandler<MouseEvent>() {
+      public void handle(final MouseEvent mouseEvent) {
+        if (drag.get()) {
+          // disable mouse events for all children
+          mouseEvent.consume();
+        }
+      }
+    });
+
+    wrapGroup.addEventFilter(MouseEvent.MOUSE_PRESSED,
+        new EventHandler<MouseEvent>() {
+          public void handle(final MouseEvent mouseEvent) {
+            if (drag.get()) {
+              // remember initial mouse cursor coordinates
+              // and node position
+              dragContext.mouseAnchorX = mouseEvent.getX();
+              dragContext.mouseAnchorY = mouseEvent.getY();
+              dragContext.initialTranslateX = node.getTranslateX();
+              dragContext.initialTranslateY = node.getTranslateY();
+            }
+          }
+        });
+
+    wrapGroup.addEventFilter(MouseEvent.MOUSE_DRAGGED,
+        new EventHandler<MouseEvent>() {
+          public void handle(final MouseEvent mouseEvent) {
+            if (drag.get()) {
+              // shift node from its initial position by delta
+              // calculated from mouse cursor movement
+              node.setTranslateX(dragContext.initialTranslateX
+                  + mouseEvent.getX() - dragContext.mouseAnchorX);
+              node.setTranslateY(dragContext.initialTranslateY
+                  + mouseEvent.getY() - dragContext.mouseAnchorY);
+            }
+          }
+        });
+
+    return wrapGroup;
+  }
+
     
     private static final class DragContext {
     public double mouseAnchorX;
