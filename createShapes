@@ -11,7 +11,9 @@ import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Polygon;
 
 /**
  *
@@ -25,18 +27,22 @@ public class createShapes {
     textField.setPrefColumnCount(10);
     textField.setPromptText("Title");
     textField.setMaxHeight(100);
+    textField.setMaxWidth(100);
+    
 
     final TextField textField2 = new TextField();
     textField2.setPrefColumnCount(10);
     textField2.setPromptText("Methods");
     textField2.setMaxHeight(100);
+    textField2.setMaxWidth(100);
     
     final TextField textField3 = new TextField();
     textField3.setPrefColumnCount(10);
     textField3.setPromptText("Attributes");
     textField3.setMaxHeight(100);
+    textField3.setMaxWidth(100);
 
-
+    
 
     final HBox panel = createHBox(
         4,
@@ -58,18 +64,104 @@ public class createShapes {
         return hbox;
     }
     
-    public static Node createLine(){
+    public static Node createDiagonalRightLine(){
         Line line = new Line();
         line.setStartX(10.0f);
         line.setStartY(10.0f);
-        line.setEndX(50.0f);
-        line.setEndY(50.0f);
+        line.setEndX(100.0f);
+        line.setEndY(100.0f);
+        line.setStrokeWidth(5);
+        final HBox panel = createHBox(
+        5, 
+        createVbox(2, line));
+        return panel;
+    }
+    
+    public static Node createDiagonalLeftLine(){
+        Line line = new Line();
+        line.setStartX(100.0f);
+        line.setStartY(100.0f);
+        line.setEndX(10.0f);
+        line.setEndY(190.0f);
+        line.setStrokeWidth(5);
+        
+        final HBox panel = createHBox(
+        5, 
+        createVbox(2, line));
+        return panel;
+    }
+    
+    public static Node createHorizontalLine(){
+        Line line = new Line();
+        line.setStartX(10.0f);
+        line.setEndX(100.0f);
+        line.setStrokeWidth(5);
         final HBox panel = createHBox(
         5, 
         createVbox(2, line));
         return panel;
     }
 
-
+    public static Node createVerticalLine(){
+        Line line = new Line();
+        line.setStartY(10.0f);
+        line.setEndY(100.0f);
+        line.setStrokeWidth(5);
+        final HBox panel = createHBox(
+        5, 
+        createVbox(2, line));
+        return panel;
     }
     
+    public static Node createVerticalFilledDiamond(){
+        Polygon p = new Polygon();
+        p.getPoints().addAll(new Double[]{
+            5.0, 0.0,
+            0.0, 8.0,
+            5.0, 15.0,
+            10.0,8.0,   
+            });
+        return p;
+
+        }
+    
+    public static Node createHorizontalFilledDiamond(){
+        Polygon p = new Polygon();
+        p.getPoints().addAll(new Double[]{
+            0.0, 5.0,
+            8.0, 0.0,
+            15.0, 5.0,
+            8.0, 10.0,   
+            });
+        return p;
+
+        }
+    
+    public static Node createVerticalHollowDiamond(){
+        Polygon p = new Polygon();
+        p.getPoints().addAll(new Double[]{
+            5.0, 0.0,
+            0.0, 8.0,
+            5.0, 15.0,
+            10.0,8.0,   
+            });
+        p.setStroke(Color.BLACK);
+        p.setFill(Color.WHITE);
+        return p;
+
+        }
+    
+    public static Node createHorizontalHollowDiamond(){
+        Polygon p = new Polygon();
+        p.getPoints().addAll(new Double[]{
+            0.0, 5.0,
+            8.0, 0.0,
+            15.0, 5.0,
+            8.0, 10.0,   
+            });
+        p.setStroke(Color.BLACK);
+        p.setFill(Color.WHITE);
+        return p;
+
+        }
+    }
