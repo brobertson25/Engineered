@@ -1,6 +1,17 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package javafxapplication9;
 
+
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.shape.Line;
 
 /**
  *
@@ -9,10 +20,56 @@ import javafx.scene.control.TextField;
 public class createShapes {
 
     
-    public TextField createTextbox(){
-        TextField tf = new TextField();
-        tf.setPrefWidth(50);
-        return tf;   
+    public static Node createTextbox(){
+    final TextField textField = new TextField();
+    textField.setPrefColumnCount(10);
+    textField.setPromptText("Title");
+    textField.setMaxHeight(100);
+
+    final TextField textField2 = new TextField();
+    textField2.setPrefColumnCount(10);
+    textField2.setPromptText("Methods");
+    textField2.setMaxHeight(100);
+    
+    final TextField textField3 = new TextField();
+    textField3.setPrefColumnCount(10);
+    textField3.setPromptText("Attributes");
+    textField3.setMaxHeight(100);
+
+
+
+    final HBox panel = createHBox(
+        4,
+        createVbox(2, textField, textField2, textField3));
+    panel.setAlignment(Pos.BOTTOM_RIGHT);
+    return panel;
     }
     
-}
+    private static VBox createVbox(final double spacing, Node...children){
+        final VBox vbox = new VBox(spacing);
+        vbox.getChildren().addAll(children);
+        return vbox;
+    }
+    
+    
+    private static HBox createHBox(final double spacing, Node...children){
+        final HBox hbox = new HBox(spacing);
+        hbox.getChildren().addAll(children);
+        return hbox;
+    }
+    
+    public static Node createLine(){
+        Line line = new Line();
+        line.setStartX(10.0f);
+        line.setStartY(10.0f);
+        line.setEndX(50.0f);
+        line.setEndY(50.0f);
+        final HBox panel = createHBox(
+        5, 
+        createVbox(2, line));
+        return panel;
+    }
+
+
+    }
+    
